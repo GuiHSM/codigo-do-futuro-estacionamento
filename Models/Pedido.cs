@@ -12,12 +12,14 @@ public record Pedido
     public int Id { get;set; }
 
     [Required(ErrorMessage = "Id cliente é obrigatório")]
-    [Column("IdCliente", TypeName = "int")]
-    public int IdCliente { get;set; } = default!;
+    [Column("clienteId", TypeName = "int")]
+    public int ClienteId { get;set; } = default!;
+    public Cliente? Cliente {get; set;}
     
     [Required(ErrorMessage = "Carro é obrigatório")]
-    [Column("Carro", TypeName = "int")]
-    public int Carro { get;set; } = default!;
+    [Column("carroId", TypeName = "int")]
+    public int CarroId { get;set; } = default!;
+    public Carro? Carro {get; set;}
 
     [Required(ErrorMessage = "Data Locacao é obrigatório")]
     [Column("DataLocacao", TypeName = "date")]

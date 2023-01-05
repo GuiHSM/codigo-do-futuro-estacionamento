@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Estacionamentoentity.Migrations
 {
     [DbContext(typeof(DbContexto))]
-    [Migration("20230104223953_migrations")]
+    [Migration("20230105005503_migrations")]
     partial class migrations
     {
         /// <inheritdoc />
@@ -28,13 +28,13 @@ namespace Estacionamentoentity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Marca")
+                    b.Property<int>("MarcaId")
                         .HasColumnType("int")
-                        .HasColumnName("marca");
+                        .HasColumnName("marcaId");
 
-                    b.Property<int>("Modelo")
+                    b.Property<int>("ModeloId")
                         .HasColumnType("int")
-                        .HasColumnName("modelo");
+                        .HasColumnName("modeloId");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -42,6 +42,10 @@ namespace Estacionamentoentity.Migrations
                         .HasColumnName("nome");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MarcaId");
+
+                    b.HasIndex("ModeloId");
 
                     b.ToTable("carros");
                 });
@@ -127,9 +131,13 @@ namespace Estacionamentoentity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Carro")
+                    b.Property<int>("CarroId")
                         .HasColumnType("int")
-                        .HasColumnName("Carro");
+                        .HasColumnName("carroId");
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int")
+                        .HasColumnName("clienteId");
 
                     b.Property<DateOnly>("DataEntrega")
                         .HasColumnType("date")
@@ -139,13 +147,71 @@ namespace Estacionamentoentity.Migrations
                         .HasColumnType("date")
                         .HasColumnName("DataLocacao");
 
-                    b.Property<int>("IdCliente")
-                        .HasColumnType("int")
-                        .HasColumnName("IdCliente");
-
                     b.HasKey("Id");
 
+                    b.HasIndex("CarroId");
+
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("pedidos");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Carro", b =>
+                {
+                    b.HasOne("Estacionamento_entity.Models.Marca", "Marca")
+                        .WithMany("Carros")
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Estacionamento_entity.Models.Modelo", "Modelo")
+                        .WithMany("Carros")
+                        .HasForeignKey("ModeloId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Marca");
+
+                    b.Navigation("Modelo");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Pedido", b =>
+                {
+                    b.HasOne("Estacionamento_entity.Models.Carro", "Carro")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("CarroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Estacionamento_entity.Models.Cliente", "Cliente")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Carro");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Carro", b =>
+                {
+                    b.Navigation("Pedidos");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Cliente", b =>
+                {
+                    b.Navigation("Pedidos");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Marca", b =>
+                {
+                    b.Navigation("Carros");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Modelo", b =>
+                {
+                    b.Navigation("Carros");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,23 +16,6 @@ namespace Estacionamentoentity.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "carros",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    nome = table.Column<string>(type: "varchar(100)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    marca = table.Column<int>(type: "int", nullable: false),
-                    modelo = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_carros", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "clientes",
                 columns: table => new
                 {
@@ -98,26 +81,93 @@ namespace Estacionamentoentity.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "carros",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    nome = table.Column<string>(type: "varchar(100)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    marcaId = table.Column<int>(type: "int", nullable: false),
+                    modeloId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_carros", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_carros_marcas_marcaId",
+                        column: x => x.marcaId,
+                        principalTable: "marcas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_carros_modelos_modeloId",
+                        column: x => x.modeloId,
+                        principalTable: "modelos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "pedidos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    IdCliente = table.Column<int>(type: "int", nullable: false),
-                    Carro = table.Column<int>(type: "int", nullable: false),
+                    clienteId = table.Column<int>(type: "int", nullable: false),
+                    carroId = table.Column<int>(type: "int", nullable: false),
                     DataLocacao = table.Column<DateOnly>(type: "date", nullable: false),
                     DataEntrega = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_pedidos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_pedidos_carros_carroId",
+                        column: x => x.carroId,
+                        principalTable: "carros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_pedidos_clientes_clienteId",
+                        column: x => x.clienteId,
+                        principalTable: "clientes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_carros_marcaId",
+                table: "carros",
+                column: "marcaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_carros_modeloId",
+                table: "carros",
+                column: "modeloId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_pedidos_carroId",
+                table: "pedidos",
+                column: "carroId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_pedidos_clienteId",
+                table: "pedidos",
+                column: "clienteId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "configuracoes");
+
+            migrationBuilder.DropTable(
+                name: "pedidos");
+
             migrationBuilder.DropTable(
                 name: "carros");
 
@@ -125,16 +175,10 @@ namespace Estacionamentoentity.Migrations
                 name: "clientes");
 
             migrationBuilder.DropTable(
-                name: "configuracoes");
-
-            migrationBuilder.DropTable(
                 name: "marcas");
 
             migrationBuilder.DropTable(
                 name: "modelos");
-
-            migrationBuilder.DropTable(
-                name: "pedidos");
         }
     }
 }

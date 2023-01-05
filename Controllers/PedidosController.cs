@@ -22,9 +22,8 @@ namespace Estacionamento_entity.Controllers
         // GET: Pedidos
         public async Task<IActionResult> Index()
         {
-              return _context.Pedidos != null ? 
-                          View(await _context.Pedidos.ToListAsync()) :
-                          Problem("Entity set 'DbContexto.Pedidos'  is null.");
+            var dbContexto = _context.Pedidos.Include(p => p.Carro).Include(p => p.Cliente);
+            return View(await dbContexto.ToListAsync());
         }
 
         // GET: Pedidos/Details/5
@@ -36,6 +35,8 @@ namespace Estacionamento_entity.Controllers
             }
 
             var pedido = await _context.Pedidos
+                .Include(p => p.Carro)
+                .Include(p => p.Cliente)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (pedido == null)
             {
@@ -48,6 +49,8 @@ namespace Estacionamento_entity.Controllers
         // GET: Pedidos/Create
         public IActionResult Create()
         {
+            ViewData["CarroId"] = new SelectList(_context.Carros, "Id", "Nome");
+            ViewData["ClienteId"] = new SelectList(_context.Clientes, "Id", "Nome");
             return View();
         }
 
@@ -56,7 +59,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdCliente,Carro,DataLocacao,DataEntrega")] Pedido pedido)
+        public async Task<IActionResult> Create([Bind("Id,ClienteId,CarroId,DataLocacao,DataEntrega")] Pedido pedido)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +67,8 @@ namespace Estacionamento_entity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CarroId"] = new SelectList(_context.Carros, "Id", "Nome", pedido.CarroId);
+            ViewData["ClienteId"] = new SelectList(_context.Clientes, "Id", "Nome", pedido.ClienteId);
             return View(pedido);
         }
 
@@ -80,6 +85,8 @@ namespace Estacionamento_entity.Controllers
             {
                 return NotFound();
             }
+            ViewData["CarroId"] = new SelectList(_context.Carros, "Id", "Nome", pedido.CarroId);
+            ViewData["ClienteId"] = new SelectList(_context.Clientes, "Id", "Nome", pedido.ClienteId);
             return View(pedido);
         }
 
@@ -88,7 +95,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCliente,Carro,DataLocacao,DataEntrega")] Pedido pedido)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ClienteId,CarroId,DataLocacao,DataEntrega")] Pedido pedido)
         {
             if (id != pedido.Id)
             {
@@ -115,6 +122,8 @@ namespace Estacionamento_entity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CarroId"] = new SelectList(_context.Carros, "Id", "Nome", pedido.CarroId);
+            ViewData["ClienteId"] = new SelectList(_context.Clientes, "Id", "Nome", pedido.ClienteId);
             return View(pedido);
         }
 
@@ -127,6 +136,8 @@ namespace Estacionamento_entity.Controllers
             }
 
             var pedido = await _context.Pedidos
+                .Include(p => p.Carro)
+                .Include(p => p.Cliente)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (pedido == null)
             {

@@ -14,4 +14,5 @@ public record Modelo
     [Required(ErrorMessage = "Nome é obrigatório")]
     [Column("nome", TypeName = "varchar(100)")]
     public string Nome { get;set; } = default!;
+    public ICollection<Carro>? Carros { get; set; }
 }

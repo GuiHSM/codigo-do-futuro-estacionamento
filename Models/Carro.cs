@@ -16,10 +16,13 @@ public record Carro
     public string Nome { get;set; } = default!;
 
     [Required(ErrorMessage = "Marca é obrigatório")]
-    [Column("marca", TypeName = "int")]
-    public int Marca { get;set; } = default!;
+    [Column("marcaId", TypeName = "int")]
+    public int MarcaId { get;set; } = default!;
+    public Marca? Marca {get; set;}
 
     [Required(ErrorMessage = "Modelo é obrigatório")]
-    [Column("modelo", TypeName = "int")]
-    public int Modelo { get;set; } = default!;
+    [Column("modeloId", TypeName = "int")]
+    public int ModeloId { get;set; } = default!;
+    public Modelo? Modelo {get; set;}
+    public ICollection<Pedido>? Pedidos { get; set; }
 }
