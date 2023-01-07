@@ -57,11 +57,17 @@ namespace Estacionamentoentity.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     nome = table.Column<string>(type: "varchar(100)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MarcaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_marcas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_marcas_marcas_MarcaId",
+                        column: x => x.MarcaId,
+                        principalTable: "marcas",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -72,11 +78,18 @@ namespace Estacionamentoentity.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     nome = table.Column<string>(type: "varchar(100)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    marcaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_modelos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_modelos_marcas_marcaId",
+                        column: x => x.marcaId,
+                        principalTable: "marcas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -88,18 +101,11 @@ namespace Estacionamentoentity.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     nome = table.Column<string>(type: "varchar(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    marcaId = table.Column<int>(type: "int", nullable: false),
                     modeloId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_carros", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_carros_marcas_marcaId",
-                        column: x => x.marcaId,
-                        principalTable: "marcas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_carros_modelos_modeloId",
                         column: x => x.modeloId,
@@ -139,14 +145,19 @@ namespace Estacionamentoentity.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_carros_marcaId",
-                table: "carros",
-                column: "marcaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_carros_modeloId",
                 table: "carros",
                 column: "modeloId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_marcas_MarcaId",
+                table: "marcas",
+                column: "MarcaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_modelos_marcaId",
+                table: "modelos",
+                column: "marcaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_pedidos_carroId",
@@ -175,10 +186,10 @@ namespace Estacionamentoentity.Migrations
                 name: "clientes");
 
             migrationBuilder.DropTable(
-                name: "marcas");
+                name: "modelos");
 
             migrationBuilder.DropTable(
-                name: "modelos");
+                name: "marcas");
         }
     }
 }

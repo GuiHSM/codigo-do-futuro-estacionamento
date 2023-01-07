@@ -19,12 +19,18 @@ namespace Estacionamento_entity.Controllers
             _context = context;
         }
 
+        [Route("/modelos.json")]
+        public async Task<IActionResult> JsonFiltradoMarca(int marcaId)
+        {
+            var locacaoContext = _context.Modelos.Where(m => m.MarcaId == marcaId);
+            return StatusCode(200, await locacaoContext.ToListAsync());
+        }
+        
         // GET: Modelos
         public async Task<IActionResult> Index()
         {
-              return _context.Modelos != null ? 
-                          View(await _context.Modelos.ToListAsync()) :
-                          Problem("Entity set 'DbContexto.Modelos'  is null.");
+            var dbContexto = _context.Modelos.Include(m => m.Marca);
+            return View(await dbContexto.ToListAsync());
         }
 
         // GET: Modelos/Details/5
@@ -36,6 +42,7 @@ namespace Estacionamento_entity.Controllers
             }
 
             var modelo = await _context.Modelos
+                .Include(m => m.Marca)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelo == null)
             {
@@ -48,6 +55,7 @@ namespace Estacionamento_entity.Controllers
         // GET: Modelos/Create
         public IActionResult Create()
         {
+            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome");
             return View();
         }
 
@@ -56,7 +64,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome")] Modelo modelo)
+        public async Task<IActionResult> Create([Bind("Id,Nome,MarcaId")] Modelo modelo)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +72,7 @@ namespace Estacionamento_entity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", modelo.MarcaId);
             return View(modelo);
         }
 
@@ -80,6 +89,7 @@ namespace Estacionamento_entity.Controllers
             {
                 return NotFound();
             }
+            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", modelo.MarcaId);
             return View(modelo);
         }
 
@@ -88,7 +98,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome")] Modelo modelo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,MarcaId")] Modelo modelo)
         {
             if (id != modelo.Id)
             {
@@ -115,6 +125,7 @@ namespace Estacionamento_entity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", modelo.MarcaId);
             return View(modelo);
         }
 
@@ -127,6 +138,7 @@ namespace Estacionamento_entity.Controllers
             }
 
             var modelo = await _context.Modelos
+                .Include(m => m.Marca)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelo == null)
             {

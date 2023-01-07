@@ -25,10 +25,6 @@ namespace Estacionamentoentity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("MarcaId")
-                        .HasColumnType("int")
-                        .HasColumnName("marcaId");
-
                     b.Property<int>("ModeloId")
                         .HasColumnType("int")
                         .HasColumnName("modeloId");
@@ -39,8 +35,6 @@ namespace Estacionamentoentity.Migrations
                         .HasColumnName("nome");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MarcaId");
 
                     b.HasIndex("ModeloId");
 
@@ -96,12 +90,17 @@ namespace Estacionamentoentity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("MarcaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nome");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MarcaId");
 
                     b.ToTable("marcas");
                 });
@@ -112,12 +111,18 @@ namespace Estacionamentoentity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("int")
+                        .HasColumnName("marcaId");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nome");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MarcaId");
 
                     b.ToTable("modelos");
                 });
@@ -155,21 +160,31 @@ namespace Estacionamentoentity.Migrations
 
             modelBuilder.Entity("Estacionamento_entity.Models.Carro", b =>
                 {
-                    b.HasOne("Estacionamento_entity.Models.Marca", "Marca")
-                        .WithMany("Carros")
-                        .HasForeignKey("MarcaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Estacionamento_entity.Models.Modelo", "Modelo")
                         .WithMany("Carros")
                         .HasForeignKey("ModeloId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Marca");
-
                     b.Navigation("Modelo");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Marca", b =>
+                {
+                    b.HasOne("Estacionamento_entity.Models.Marca", null)
+                        .WithMany("Marcas")
+                        .HasForeignKey("MarcaId");
+                });
+
+            modelBuilder.Entity("Estacionamento_entity.Models.Modelo", b =>
+                {
+                    b.HasOne("Estacionamento_entity.Models.Marca", "Marca")
+                        .WithMany()
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Marca");
                 });
 
             modelBuilder.Entity("Estacionamento_entity.Models.Pedido", b =>
@@ -203,7 +218,7 @@ namespace Estacionamentoentity.Migrations
 
             modelBuilder.Entity("Estacionamento_entity.Models.Marca", b =>
                 {
-                    b.Navigation("Carros");
+                    b.Navigation("Marcas");
                 });
 
             modelBuilder.Entity("Estacionamento_entity.Models.Modelo", b =>

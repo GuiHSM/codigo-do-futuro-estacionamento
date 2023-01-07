@@ -15,11 +15,6 @@ public record Carro
     [Column("nome", TypeName = "varchar(100)")]
     public string Nome { get;set; } = default!;
 
-    [Required(ErrorMessage = "Marca é obrigatório")]
-    [Column("marcaId", TypeName = "int")]
-    public int MarcaId { get;set; } = default!;
-    public Marca? Marca {get; set;}
-
     [Required(ErrorMessage = "Modelo é obrigatório")]
     [Column("modeloId", TypeName = "int")]
     public int ModeloId { get;set; } = default!;

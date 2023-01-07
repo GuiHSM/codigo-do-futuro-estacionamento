@@ -22,7 +22,7 @@ namespace Estacionamento_entity.Controllers
         // GET: Carros
         public async Task<IActionResult> Index()
         {
-            var dbContexto = _context.Carros.Include(c => c.Marca).Include(c => c.Modelo);
+            var dbContexto = _context.Carros.Include(c => c.Modelo);
             return View(await dbContexto.ToListAsync());
         }
 
@@ -35,7 +35,6 @@ namespace Estacionamento_entity.Controllers
             }
 
             var carro = await _context.Carros
-                .Include(c => c.Marca)
                 .Include(c => c.Modelo)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (carro == null)
@@ -49,8 +48,11 @@ namespace Estacionamento_entity.Controllers
         // GET: Carros/Create
         public IActionResult Create()
         {
-            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome");
-            ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome");
+            var marcas = _context.Marcas.ToList();
+            var marcaId = marcas[0].Id;
+            var modelos = _context.Modelos.Where(m => m.MarcaId == marcaId).ToList();
+
+            ViewData["ModeloId"] = new SelectList(modelos, "Id", "Nome");
             return View();
         }
 
@@ -59,7 +61,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,MarcaId,ModeloId")] Carro carro)
+        public async Task<IActionResult> Create([Bind("Id,Nome,ModeloId")] Carro carro)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +69,6 @@ namespace Estacionamento_entity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", carro.MarcaId);
             ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", carro.ModeloId);
             return View(carro);
         }
@@ -85,7 +86,6 @@ namespace Estacionamento_entity.Controllers
             {
                 return NotFound();
             }
-            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", carro.MarcaId);
             ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", carro.ModeloId);
             return View(carro);
         }
@@ -95,7 +95,7 @@ namespace Estacionamento_entity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,MarcaId,ModeloId")] Carro carro)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,ModeloId")] Carro carro)
         {
             if (id != carro.Id)
             {
@@ -122,7 +122,6 @@ namespace Estacionamento_entity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MarcaId"] = new SelectList(_context.Marcas, "Id", "Nome", carro.MarcaId);
             ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", carro.ModeloId);
             return View(carro);
         }
@@ -136,7 +135,6 @@ namespace Estacionamento_entity.Controllers
             }
 
             var carro = await _context.Carros
-                .Include(c => c.Marca)
                 .Include(c => c.Modelo)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (carro == null)

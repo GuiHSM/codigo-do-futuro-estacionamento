@@ -23,10 +23,10 @@ public record Pedido
 
     [Required(ErrorMessage = "Data Locacao é obrigatório")]
     [Column("DataLocacao", TypeName = "date")]
-    public DateOnly DataLocacao { get;set; } = default!;
+    public DateTime DataLocacao { get;set; } = default!;
 
     [Required(ErrorMessage = "Data Entrega é obrigatório")]
     [Column("DataEntrega", TypeName = "date")]
-    public DateOnly DataEntrega { get;set; } = default!;
+    public DateTime DataEntrega { get;set; } = default!;
 
 }
